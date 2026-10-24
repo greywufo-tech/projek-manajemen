@@ -1,3 +1,5 @@
+<img width="640" height="293" alt="image" src="https://github.com/user-attachments/assets/c6384c2c-0a35-4ede-af0c-05a21a87097c" />
+
 # Project Management & Task Scheduling System
 
 Aplikasi web full-stack untuk manajemen proyek perangkat lunak dengan fitur Gantt Chart, fase SDLC, alokasi resource tim, dan ketergantungan tugas.
