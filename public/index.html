@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Project Management & Task Scheduling System</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="/css/style.css" />
+</head>
+<body class="bg-gray-50 font-sans antialiased">
+
+  <!-- NAVBAR -->
+  <nav class="bg-indigo-700 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="#" class="text-lg font-bold tracking-wide">📋 PMS - Project Management System</a>
+      <div class="flex gap-1 sm:gap-3">
+        <button onclick="switchView('dashboard')" class="nav-btn px-3 py-1.5 rounded hover:bg-indigo-600 transition text-sm font-medium" data-view="dashboard">Dashboard</button>
+        <button onclick="switchView('projects')" class="nav-btn px-3 py-1.5 rounded hover:bg-indigo-600 transition text-sm font-medium" data-view="projects">Proyek</button>
+        <button onclick="switchView('tasks')" class="nav-btn px-3 py-1.5 rounded hover:bg-indigo-600 transition text-sm font-medium" data-view="tasks">Tugas & Fase</button>
+        <button onclick="switchView('dependencies')" class="nav-btn px-3 py-1.5 rounded hover:bg-indigo-600 transition text-sm font-medium" data-view="dependencies">Ketergantungan</button>
+        <button onclick="switchView('resources')" class="nav-btn px-3 py-1.5 rounded hover:bg-indigo-600 transition text-sm font-medium" data-view="resources">Sumber Daya Tim</button>
+        <button onclick="switchView('gantt')" class="nav-btn px-3 py-1.5 rounded hover:bg-indigo-600 transition text-sm font-medium" data-view="gantt">Gantt Chart</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="max-w-7xl mx-auto px-4 py-6">
+
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view">
+      <h2 class="text-2xl font-bold text-gray-800 mb-4">Dashboard</h2>
+      <div id="dashboard-stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl shadow p-4">
+          <h3 class="font-semibold text-gray-700 mb-3">Daftar Proyek</h3>
+          <div id="dashboard-projects" class="space-y-2"></div>
+        </div>
+        <div class="bg-white rounded-xl shadow p-4">
+          <h3 class="font-semibold text-gray-700 mb-3">Aktivitas Terbaru (Tugas)</h3>
+          <div id="dashboard-tasks" class="space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Projects -->
+    <section id="view-projects" class="view hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <h2 class="text-2xl font-bold text-gray-800">Manajemen Proyek</h2>
+        <button onclick="openProjectModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">+ Buat Proyek Baru</button>
+      </div>
+      <div id="projects-table" class="bg-white rounded-xl shadow overflow-hidden"></div>
+    </section>
+
+    <!-- Tasks -->
+    <section id="view-tasks" class="view hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <h2 class="text-2xl font-bold text-gray-800">Manajemen Tugas & Fase SDLC</h2>
+        <div class="flex gap-2">
+          <select id="task-project-filter" onchange="loadTasks()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow">
+            <option value="">Semua Proyek</option>
+          </select>
+          <button onclick="openTaskModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">+ Tambah Tugas</button>
+        </div>
+      </div>
+      <div id="tasks-table" class="bg-white rounded-xl shadow overflow-hidden"></div>
+    </section>
+
+    <!-- Dependencies -->
+    <section id="view-dependencies" class="view hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <h2 class="text-2xl font-bold text-gray-800">Ketergantungan Tugas (Predecessors)</h2>
+        <div class="flex gap-2">
+          <select id="dep-task-filter" onchange="loadDependencies()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow">
+            <option value="">Pilih Tugas</option>
+          </select>
+          <button onclick="openDependencyModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">+ Tambah Ketergantungan</button>
+        </div>
+      </div>
+      <div id="dependencies-table" class="bg-white rounded-xl shadow overflow-hidden"></div>
+      <div id="dep-diagram" class="mt-6 bg-white rounded-xl shadow p-4 hidden">
+        <h3 class="font-semibold text-gray-700 mb-3">Diagram Alur (teks)</h3>
+        <div id="dep-diagram-content" class="text-sm text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded"></div>
+      </div>
+    </section>
+
+    <!-- Resources -->
+    <section id="view-resources" class="view hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <h2 class="text-2xl font-bold text-gray-800">Manajemen Sumber Daya Tim</h2>
+        <div class="flex gap-2">
+          <button onclick="openResourceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">+ Tambah Anggota Tim</button>
+        </div>
+      </div>
+      <div id="resources-table" class="bg-white rounded-xl shadow overflow-hidden"></div>
+      <div class="mt-6 bg-white rounded-xl shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-3">Alokasi Penugasan (Task Assignments)</h3>
+        <div class="flex gap-2 mb-3">
+          <select id="alloc-task-filter" onchange="loadAllocations()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow">
+            <option value="">Semua Tugas</option>
+          </select>
+          <button onclick="openAllocationModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">+ Alokasikan Tim</button>
+        </div>
+        <div id="alloc-table" class="overflow-x-auto"></div>
+      </div>
+    </section>
+
+    <!-- Gantt -->
+    <section id="view-gantt" class="view hidden">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+        <h2 class="text-2xl font-bold text-gray-800">Visualisasi Gantt Chart & Timeline</h2>
+        <div class="flex gap-2">
+          <select id="gantt-project-filter" onchange="loadGantt()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow">
+            <option value="">Pilih Proyek</option>
+          </select>
+          <button onclick="exportGanttImage()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">📷 Export PNG</button>
+        </div>
+      </div>
+      <div id="gantt-container" class="bg-white rounded-xl shadow p-4 overflow-x-auto">
+        <div id="gantt-loading" class="text-gray-500 py-8 text-center">Memuat data Gantt...</div>
+        <svg id="gantt-svg" class="w-full" style="min-height: 320px;"></svg>
+        <div id="gantt-empty" class="text-gray-500 py-8 text-center hidden">Belum ada proyek atau tugas. Buat proyek dan tugas terlebih dahulu.</div>
+      </div>
+      <div class="mt-4 bg-white rounded-xl shadow p-4">
+        <h3 class="font-semibold text-gray-700 mb-3">Milestones</h3>
+        <div class="flex gap-2 mb-3">
+          <select id="ms-project-filter" onchange="loadMilestones()" class="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white shadow">
+            <option value="">Pilih Proyek</option>
+          </select>
+          <button onclick="openMilestoneModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg shadow transition font-medium">+ Tambah Milestone</button>
+        </div>
+        <div id="milestones-table" class="overflow-x-auto"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal base -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/40 z-40 hidden flex items-center justify-center p-4" onclick="closeModal(event)"></div>
+  <div id="modal-box" class="fixed z-50 hidden bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto p-6"></div>
+
+  <!-- Toast container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 space-y-2"></div>
+
+  <script src="/js/app.js"></script>
+  <script src="/js/gantt.js"></script>
+</body>
+</html>

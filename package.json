@@ -1,0 +1,13 @@
+{
+  "name": "project-management-gantt",
+  "version": "1.0.0",
+  "description": "Project Management & Task Scheduling System with Gantt Chart, SDLC phases, resource allocation",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sql.js": "^1.10.2"
+  }
+}
